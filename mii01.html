@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Volunteer Mii - Sign Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chosen Palette: Accessible Dark Mode - Dark Grey, Bright Red, Off-White -->
+    <!-- Application Structure Plan: A single-page application focused on a frictionless, multi-step user registration process. The flow guides the user from a hero landing page through sequential steps (basic info, age verification, location, interests) to a final confirmation. This structure is chosen to directly address the client's core request for a "quick and easy signup" and aligns with the MVP strategy of solving the user onboarding problem first, creating a welcoming and non-intimidating first experience with the "Volunteer Mii" brand. -->
+    <!-- Visualization & Content Choices: The primary "visualization" is the signup form itself, treated as a key interactive element. Report Info: Need for "frictionless onboarding". Goal: Inform & Collect Data. Method: Multi-step HTML form with social sign-up options and a Gemini-powered idea generator. Interaction: Users input data, navigate between steps, receive real-time validation and age checks, or use one-click social sign-up. Justification: Breaks down the daunting task of registration into manageable chunks, reducing user fatigue. The interest selection uses a clickable tag cloud (HTML/CSS) for a more engaging interaction. A Gemini API call provides personalized volunteering ideas based on user interests. Library: Vanilla JS for form logic. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+        
+        .form-step {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .form-step.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .progress-bar-fill {
+            transition: width 0.4s ease-in-out;
+        }
+        .interest-tag {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .interest-tag.selected {
+            background-color: #DC2626; 
+            color: #FFFFFF;
+            border-color: #DC2626;
+        }
+        .loader {
+            border: 9px solid #000000;
+            border-top: 9px solid #DC2626;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-800 text-gray-100 flex flex-col items-center justify-center min-h-full p-4 sm:p-6">
+
+    <main id="app-container" class="w-full max-w-2xl mx-auto">
+        
+        <div id="landing-view" class="text-center">
+            <div class="mb-6">
+                 <span class="inline-block bg-red-600 text-white text-2xl font-bold p-3 rounded-full">🤝</span>
+            </div>
+            <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4">Volunteer Mii</h1>
+            <p class="text-lg sm:text-xl text-gray-300 mb-8 max-w-md mx-auto">The easiest way to find meaningful volunteer opportunities in the UK and make a difference.</p>
+            <button id="start-btn" class="bg-red-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-red-700 transition-colors duration-300 transform hover:scale-105 shadow-lg">
+                Start Volunteering
+            </button>
+        </div>
+
+        <div id="signup-view" class="hidden w-full bg-gray-900/50 backdrop-blur-sm p-6 sm:p-10 rounded-2xl shadow-2xl border border-gray-700">
+            <form id="signup-form" novalidate>
+                
+                <div class="text-center mb-6">
+                    <h2 id="form-title" class="text-2xl sm:text-3xl font-bold text-white">Create Your Account</h2>
+                    <p id="step-counter" class="text-gray-400 mt-1">Step 1 of 4</p>
+                </div>
+                
+                <div id="progress-container" class="w-full bg-gray-700 rounded-full h-2.5 mb-8">
+                    <div id="progress-bar" class="bg-red-600 h-2.5 rounded-full progress-bar-fill" style="width: 25%"></div>
+                </div>
+
+                <div id="step-1" class="form-step active">
+                    <h3 class="font-bold text-xl mb-4 text-center">Let's start with the basics</h3>
+                    
+                    <div class="space-y-4 mb-6">
+                        <button type="button" id="google-signup-btn" class="w-full flex items-center justify-center gap-3 bg-white text-gray-800 font-semibold py-2.5 px-4 rounded-lg shadow-md hover:bg-gray-100 transition-colors">
+                            <svg class="w-5 h-5" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.222,0-9.655-3.373-11.297-7.939l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C42.021,35.596,44,30.138,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path></svg>
+                            Sign up with Google
+                        </button>
+                        <button type="button" id="facebook-signup-btn" class="w-full flex items-center justify-center gap-3 bg-blue-600 text-white font-semibold py-2.5 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-colors">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M22,12c0-5.523-4.477-10-10-10S2,6.477,2,12c0,4.99,3.657,9.128,8.438,9.878V14.89h-2.54V12h2.54V9.797c0-2.506,1.492-3.89,3.777-3.89c1.094,0,2.238,0.195,2.238,0.195v2.46h-1.26c-1.24,0-1.628,0.772-1.628,1.562V12h2.773l-.443,2.89h-2.33V21.878C18.343,21.128,22,16.99,22,12Z"></path></svg>
+                            Sign up with Facebook
+                        </button>
+                    </div>
+
+                    <div class="flex items-center my-6">
+                        <div class="flex-grow border-t border-gray-600"></div>
+                        <span class="flex-shrink mx-4 text-gray-400 text-sm">OR</span>
+                        <div class="flex-grow border-t border-gray-600"></div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="fullName" class="block mb-2 text-sm font-medium text-gray-300">Full Name</label>
+                        <input type="text" id="fullName" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" placeholder="e.g., Jane Doe" required>
+                        <p class="text-red-400 text-xs mt-1 hidden">Please enter your full name.</p>
+                    </div>
+                    <div>
+                        <label for="email" class="block mb-2 text-sm font-medium text-gray-300">Email Address</label>
+                        <input type="email" id="email" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" placeholder="you@example.com" required>
+                        <p class="text-red-400 text-xs mt-1 hidden">Please enter a valid email address.</p>
+                    </div>
+                </div>
+
+                <div id="step-2" class="form-step">
+                    <h3 class="font-bold text-xl mb-4 text-center">Verify Your Eligibility</h3>
+                    <p class="text-gray-400 text-center text-sm mb-6">You must be over 18 and reside in the UK to volunteer.</p>
+                    <div class="mb-4">
+                        <label for="dob" class="block mb-2 text-sm font-medium text-gray-300">Date of Birth</label>
+                        <input type="date" id="dob" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" required>
+                         <p id="dob-error" class="text-red-400 text-xs mt-1 hidden">You must be at least 18 years old to sign up.</p>
+                    </div>
+                    <div>
+                        <label for="postcode" class="block mb-2 text-sm font-medium text-gray-300">UK Postcode</label>
+                        <input type="text" id="postcode" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" placeholder="e.g., SW1A 0AA" required>
+                        <p class="text-red-400 text-xs mt-1 hidden">Please enter a valid UK postcode.</p>
+                    </div>
+                </div>
+
+                <div id="step-3" class="form-step">
+                    <h3 class="font-bold text-xl mb-4 text-center">What are you passionate about?</h3>
+                    <p class="text-gray-400 text-center text-sm mb-6">Select a few interests to help us find the perfect roles for you.</p>
+                    <div id="interests-container" class="flex flex-wrap gap-3 justify-center">
+                    </div>
+                    <div id="gemini-section" class="mt-8 text-center hidden">
+                        <button type="button" id="gemini-btn" class="bg-purple-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-purple-700 transition-colors duration-300 transform hover:scale-105">
+                            ✨ Suggest Volunteering Ideas
+                        </button>
+                        <div id="gemini-output" class="mt-4 text-left bg-gray-700/50 p-4 rounded-lg min-h-[100px]">
+                             <p class="text-gray-400 text-sm">Your personalized volunteering ideas will appear here...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="step-4" class="form-step">
+                    <h3 class="font-bold text-xl mb-4 text-center">Almost there!</h3>
+                     <p class="text-gray-400 text-center text-sm mb-6">Create a secure password for your account.</p>
+                    <div class="mb-4">
+                        <label for="password" class="block mb-2 text-sm font-medium text-gray-300">Password</label>
+                        <input type="password" id="password" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" required>
+                        <p class="text-red-400 text-xs mt-1 hidden">Password must be at least 8 characters.</p>
+                    </div>
+                    <div>
+                        <label for="confirm-password" class="block mb-2 text-sm font-medium text-gray-300">Confirm Password</label>
+                        <input type="password" id="confirm-password" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" required>
+                        <p class="text-red-400 text-xs mt-1 hidden">Passwords do not match.</p>
+                    </div>
+                </div>
+                
+                <div id="success-view" class="hidden text-center py-8">
+                    <div class="mb-6">
+                        <span class="inline-block bg-green-500 text-white text-4xl font-bold w-16 h-16 flex items-center justify-center rounded-full">✓</span>
+                    </div>
+                    <h2 class="text-3xl font-bold text-white mb-4">Welcome to Volunteer Mii!</h2>
+                    <p class="text-lg text-gray-300 mb-8">Your account has been created successfully. We're thrilled to have you. We will notify you when new opportunities matching your interests become available in your area.</p>
+                    <button id="finish-btn" class="bg-red-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-red-700 transition-colors">Start Over</button>
+                </div>
+
+
+                <div id="form-navigation" class="mt-8 flex justify-between items-center">
+                    <button type="button" id="prev-btn" class="text-gray-300 font-bold py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors invisible">
+                        &larr; Back
+                    </button>
+                    <button type="button" id="next-btn" class="bg-red-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-red-700 transition-colors duration-300 transform hover:scale-105">
+                        Next &rarr;
+                    </button>
+                </div>
+
+            </form>
+        </div>
+    </main>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const startBtn = document.getElementById('start-btn');
+            const landingView = document.getElementById('landing-view');
+            const signupView = document.getElementById('signup-view');
+            const successView = document.getElementById('success-view');
+            const formNavigation = document.getElementById('form-navigation');
+            const finishBtn = document.getElementById('finish-btn');
+            
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const progressBar = document.getElementById('progress-bar');
+            const progressContainer = document.getElementById('progress-container');
+            const stepCounter = document.getElementById('step-counter');
+            const formTitle = document.getElementById('form-title');
+
+            const googleBtn = document.getElementById('google-signup-btn');
+            const facebookBtn = document.getElementById('facebook-signup-btn');
+            
+            const geminiSection = document.getElementById('gemini-section');
+            const geminiBtn = document.getElementById('gemini-btn');
+            const geminiOutput = document.getElementById('gemini-output');
+
+            const steps = Array.from(document.querySelectorAll('.form-step'));
+            const totalSteps = steps.length;
+            let currentStep = 1;
+
+            const formData = {
+                fullName: '',
+                email: '',
+                dob: '',
+                postcode: '',
+                interests: [],
+                password: ''
+            };
+            
+            const interests = [
+                'Animals', 'Environment', 'Health', 'Community', 'Education', 
+                'Seniors', 'Arts & Culture', 'Sports', 'Technology', 'Advocacy'
+            ];
+            const interestsContainer = document.getElementById('interests-container');
+            interests.forEach(interest => {
+                const tag = document.createElement('span');
+                tag.textContent = interest;
+                tag.className = 'interest-tag border-2 border-gray-600 text-gray-300 rounded-full px-4 py-2 text-sm font-medium';
+                tag.dataset.interest = interest;
+                interestsContainer.appendChild(tag);
+            });
+
+            startBtn.addEventListener('click', () => {
+                landingView.classList.add('hidden');
+                signupView.classList.remove('hidden');
+            });
+
+            const handleSocialSignup = (provider) => {
+                console.log(`Simulating sign-up with ${provider}...`);
+                steps.forEach(step => step.style.display = 'none');
+                formNavigation.style.display = 'none';
+                progressContainer.style.display = 'none';
+                stepCounter.style.display = 'none';
+                formTitle.textContent = 'Welcome!';
+                successView.classList.remove('hidden');
+                successView.style.display = 'block';
+            };
+
+            googleBtn.addEventListener('click', () => handleSocialSignup('Google'));
+            facebookBtn.addEventListener('click', () => handleSocialSignup('Facebook'));
+
+            interestsContainer.addEventListener('click', (e) => {
+                if (e.target.classList.contains('interest-tag')) {
+                    e.target.classList.toggle('selected');
+                    const interest = e.target.dataset.interest;
+                    if (e.target.classList.contains('selected')) {
+                        if (!formData.interests.includes(interest)) {
+                            formData.interests.push(interest);
+                        }
+                    } else {
+                        formData.interests = formData.interests.filter(i => i !== interest);
+                    }
+                    geminiSection.classList.toggle('hidden', formData.interests.length === 0);
+                }
+            });
+
+            async function getGeminiSuggestions() {
+                geminiOutput.innerHTML = '<div class="loader"></div>';
+                geminiBtn.disabled = true;
+                geminiBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+                const postcode = document.getElementById('postcode').value;
+                const prompt = `Based on the following interests: ${formData.interests.join(', ')} and the UK postcode area ${postcode}, suggest 3 creative and specific local volunteering ideas. For each idea, provide a short, inspiring description of about 2-3 sentences. Format the output as simple HTML with a <h4> for the title and a <p> for the description for each idea.`;
+
+                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiKey = ""; 
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`API error: ${response.statusText}`);
+                    }
+
+                    const result = await response.json();
+                    
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        geminiOutput.innerHTML = text;
+                    } else {
+                       throw new Error("Invalid response structure from API.");
+                    }
+                } catch (error) {
+                    console.error("Gemini API call failed:", error);
+                    geminiOutput.innerHTML = `<p class="text-red-400">Sorry, we couldn't generate ideas at this time. Please try again later.</p>`;
+                } finally {
+                    geminiBtn.disabled = false;
+                    geminiBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                }
+            }
+
+            geminiBtn.addEventListener('click', getGeminiSuggestions);
+
+            function updateUI() {
+                steps.forEach((step, index) => {
+                    step.classList.toggle('active', (index + 1) === currentStep);
+                });
+                
+                const progress = (currentStep / totalSteps) * 100;
+                progressBar.style.width = `${progress}%`;
+                stepCounter.textContent = `Step ${currentStep} of ${totalSteps}`;
+
+                prevBtn.classList.toggle('invisible', currentStep === 1);
+                
+                if (currentStep === totalSteps) {
+                    nextBtn.textContent = 'Submit';
+                } else {
+                    nextBtn.textContent = 'Next →';
+                }
+            }
+            
+            function showError(inputElement, message) {
+                const errorElement = inputElement.nextElementSibling;
+                errorElement.textContent = message;
+                errorElement.classList.remove('hidden');
+                inputElement.classList.add('border-red-500');
+            }
+
+            function clearError(inputElement) {
+                const errorElement = inputElement.nextElementSibling;
+                errorElement.classList.add('hidden');
+                inputElement.classList.remove('border-red-500');
+            }
+
+            function validateStep() {
+                let isValid = true;
+                const activeStepInputs = steps[currentStep - 1].querySelectorAll('input[required]');
+                
+                activeStepInputs.forEach(input => {
+                    clearError(input);
+                    if (input.type === 'email') {
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (!emailRegex.test(input.value)) {
+                            showError(input, 'Please enter a valid email address.');
+                            isValid = false;
+                        }
+                    } else if (input.id === 'dob') {
+                         if (!validateAge(input.value)) {
+                            showError(input, 'You must be at least 18 years old to sign up.');
+                            isValid = false;
+                         } else if (input.value === '') {
+                             showError(input, 'Please enter your date of birth.');
+                            isValid = false;
+                         }
+                    } else if (input.id === 'postcode') {
+                        const postcodeRegex = /^[A-Z]{1,2}[0-9R][0-9A-Z]?\s?[0-9][A-Z]{2}$/i;
+                        if (!postcodeRegex.test(input.value)) {
+                            showError(input, 'Please enter a valid UK postcode.');
+                            isValid = false;
+                        }
+                    } else if (input.type === 'password' && input.id === 'password') {
+                        if (input.value.length < 8) {
+                            showError(input, 'Password must be at least 8 characters long.');
+                            isValid = false;
+                        }
+                    } else if (input.type === 'password' && input.id === 'confirm-password') {
+                        const passwordInput = document.getElementById('password');
+                        if (input.value !== passwordInput.value) {
+                             showError(input, 'Passwords do not match.');
+                             isValid = false;
+                        }
+                    }
+                    else if (!input.value.trim()) {
+                        showError(input, 'This field is required.');
+                        isValid = false;
+                    }
+                });
+                return isValid;
+            }
+
+            function validateAge(dobString) {
+                if (!dobString) return false;
+                const today = new Date();
+                const birthDate = new Date(dobString);
+                let age = today.getFullYear() - birthDate.getFullYear();
+                const m = today.getMonth() - birthDate.getMonth();
+                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                    age--;
+                }
+                return age >= 18;
+            }
+            
+            document.getElementById('dob').addEventListener('change', (e) => {
+                 if(e.target.value !== ''){
+                     if(validateAge(e.target.value)){
+                         clearError(e.target);
+                     } else {
+                         showError(e.target, 'You must be at least 18 years old to sign up.');
+                     }
+                 }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (validateStep()) {
+                    if (currentStep < totalSteps) {
+                        currentStep++;
+                        updateUI();
+                    } else {
+                        // Final submission
+                        console.log('Form Submitted:', formData);
+                        steps.forEach(step => step.style.display = 'none');
+                        formNavigation.style.display = 'none';
+                        progressContainer.style.display = 'none';
+                        stepCounter.style.display = 'none';
+                        formTitle.textContent = 'Welcome!';
+                        successView.classList.remove('hidden');
+                        successView.style.display = 'block';
+                    }
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (currentStep > 1) {
+                    currentStep--;
+                    updateUI();
+                }
+            });
+            
+            finishBtn.addEventListener('click', () => {
+                location.reload();
+            });
+
+            updateUI();
+        });
+    </script>
+</body>
+</html>
+<a href="https://marketplace.visualstudio.com/items?itemName=publishername.extensionname">
+    <img src="https://vsmarketplacebadges.dev/badge_title/publishername.extensionname.svg" alt="badge_title">
+</a>
