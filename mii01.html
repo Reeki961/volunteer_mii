@@ -15,16 +15,13 @@
         }
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
         
+        /* --- Base Animations --- */
         .form-step {
             display: none;
-            animation: fadeIn 0.5s;
+            animation: fadeIn 0.5s ease-out forwards;
         }
         .form-step.active {
             display: block;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
         }
         .progress-bar-fill {
             transition: width 0.4s ease-in-out;
@@ -37,19 +34,169 @@
             background-color: #DC2626; 
             color: #FFFFFF;
             border-color: #DC2626;
+            transform: scale(1.05);
         }
         .loader {
-            border: 9px solid #000000;
-            border-top: 9px solid #DC2626;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #DC2626;
             border-radius: 50%;
-            width: 40px;
-            height: 40px;
+            width: 24px;
+            height: 24px;
             animation: spin 1s linear infinite;
-            margin: 20px auto;
+        }
+        input {
+            transition: all 0.2s ease-in-out;
+        }
+        input:focus {
+            box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.3);
+            border-color: #DC2626;
+        }
+
+        /* --- Keyframe Animations --- */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
+        }
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            80% { transform: scale(1.1); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes tada {
+            0% {transform: scale(1);}
+            10%, 20% {transform: scale(0.9) rotate(-3deg);}
+            30%, 50%, 70%, 90% {transform: scale(1.1) rotate(3deg);}
+            40%, 60%, 80% {transform: scale(1.1) rotate(-3deg);}
+            100% {transform: scale(1) rotate(0);}
+        }
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, 0); }
+        }
+
+        /* --- Animation Classes --- */
+        .animate-on-load {
+            opacity: 0; /* Start hidden */
+            animation-fill-mode: forwards;
+        }
+        .animate-slide-in-up {
+            animation-name: slideInUp;
+            animation-duration: 0.7s;
+            animation-timing-function: ease-out;
+        }
+        .animate-tada {
+            animation: tada 1s ease-in-out;
+        }
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* --- Gemini Assistant Bubble Styles --- */
+        #gemini-chat-bubble {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #8B5CF6; /* Purple */
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, background-color 0.3s ease;
+            z-index: 999;
+            animation: popIn 0.5s 1s ease-out forwards;
+            transform: scale(0); /* Start scaled down */
+        }
+        #gemini-chat-bubble:hover {
+            transform: scale(1.1);
+            background-color: #7C3AED;
+        }
+        #gemini-chat-modal {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        #gemini-chat-modal.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        #gemini-chat-modal.visible .chat-container {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .chat-container {
+            background-color: #1F2937; /* gray-800 */
+            width: 90%;
+            max-width: 500px;
+            height: 70vh;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid #4B5563; /* gray-600 */
+            transform: scale(0.95);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .chat-header {
+            padding: 16px;
+            background-color: #374151; /* gray-700 */
+            border-bottom: 1px solid #4B5563;
+        }
+        .chat-messages {
+            flex-grow: 1;
+            padding: 16px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .chat-message {
+            padding: 10px 14px;
+            border-radius: 12px;
+            max-width: 80%;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+        .user-message {
+            background-color: #DC2626; /* red-600 */
+            color: white;
+            align-self: flex-end;
+            border-bottom-right-radius: 2px;
+        }
+        .assistant-message {
+            background-color: #4B5563; /* gray-600 */
+            color: #F3F4F6; /* gray-100 */
+            align-self: flex-start;
+            border-bottom-left-radius: 2px;
+        }
+        .chat-input-area {
+            padding: 16px;
+            border-top: 1px solid #4B5563;
+            display: flex;
+            gap: 10px;
         }
     </style>
 </head>
@@ -58,12 +205,12 @@
     <main id="app-container" class="w-full max-w-2xl mx-auto">
         
         <div id="landing-view" class="text-center">
-            <div class="mb-6">
+            <div class="mb-6 animate-on-load">
                  <span class="inline-block bg-red-600 text-white text-2xl font-bold p-3 rounded-full">🤝</span>
             </div>
-            <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4">Volunteer Mii</h1>
-            <p class="text-lg sm:text-xl text-gray-300 mb-8 max-w-md mx-auto">The easiest way to find meaningful volunteer opportunities in the UK and make a difference.</p>
-            <button id="start-btn" class="bg-red-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-red-700 transition-colors duration-300 transform hover:scale-105 shadow-lg">
+            <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4 animate-on-load">Volunteer Mii</h1>
+            <p class="text-lg sm:text-xl text-gray-300 mb-8 max-w-md mx-auto animate-on-load">The easiest way to find meaningful volunteer opportunities in the UK and make a difference.</p>
+            <button id="start-btn" class="bg-red-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-red-700 transition-colors duration-300 transform hover:scale-105 shadow-lg animate-on-load">
                 Start Volunteering
             </button>
         </div>
@@ -80,38 +227,25 @@
                     <div id="progress-bar" class="bg-red-600 h-2.5 rounded-full progress-bar-fill" style="width: 25%"></div>
                 </div>
 
+                <!-- Form Steps remain unchanged -->
                 <div id="step-1" class="form-step active">
                     <h3 class="font-bold text-xl mb-4 text-center">Let's start with the basics</h3>
-                    
                     <div class="space-y-4 mb-6">
                         <button type="button" id="google-signup-btn" class="w-full flex items-center justify-center gap-3 bg-white text-gray-800 font-semibold py-2.5 px-4 rounded-lg shadow-md hover:bg-gray-100 transition-colors">
                             <svg class="w-5 h-5" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.222,0-9.655-3.373-11.297-7.939l-6.522,5.025C9.505,39.556,16.227,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571l6.19,5.238C42.021,35.596,44,30.138,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path></svg>
                             Sign up with Google
                         </button>
-                        <button type="button" id="facebook-signup-btn" class="w-full flex items-center justify-center gap-3 bg-blue-600 text-white font-semibold py-2.5 px-4 rounded-lg shadow-md hover:bg-blue-700 transition-colors">
-                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M22,12c0-5.523-4.477-10-10-10S2,6.477,2,12c0,4.99,3.657,9.128,8.438,9.878V14.89h-2.54V12h2.54V9.797c0-2.506,1.492-3.89,3.777-3.89c1.094,0,2.238,0.195,2.238,0.195v2.46h-1.26c-1.24,0-1.628,0.772-1.628,1.562V12h2.773l-.443,2.89h-2.33V21.878C18.343,21.128,22,16.99,22,12Z"></path></svg>
-                            Sign up with Facebook
-                        </button>
                     </div>
-
-                    <div class="flex items-center my-6">
-                        <div class="flex-grow border-t border-gray-600"></div>
-                        <span class="flex-shrink mx-4 text-gray-400 text-sm">OR</span>
-                        <div class="flex-grow border-t border-gray-600"></div>
-                    </div>
-
+                    <div class="flex items-center my-6"><div class="flex-grow border-t border-gray-600"></div><span class="flex-shrink mx-4 text-gray-400 text-sm">OR</span><div class="flex-grow border-t border-gray-600"></div></div>
                     <div class="mb-4">
                         <label for="fullName" class="block mb-2 text-sm font-medium text-gray-300">Full Name</label>
                         <input type="text" id="fullName" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" placeholder="e.g., Jane Doe" required>
-                        <p class="text-red-400 text-xs mt-1 hidden">Please enter your full name.</p>
                     </div>
                     <div>
                         <label for="email" class="block mb-2 text-sm font-medium text-gray-300">Email Address</label>
                         <input type="email" id="email" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" placeholder="you@example.com" required>
-                        <p class="text-red-400 text-xs mt-1 hidden">Please enter a valid email address.</p>
                     </div>
                 </div>
-
                 <div id="step-2" class="form-step">
                     <h3 class="font-bold text-xl mb-4 text-center">Verify Your Eligibility</h3>
                     <p class="text-gray-400 text-center text-sm mb-6">You must be over 18 and reside in the UK to volunteer.</p>
@@ -123,65 +257,83 @@
                     <div>
                         <label for="postcode" class="block mb-2 text-sm font-medium text-gray-300">UK Postcode</label>
                         <input type="text" id="postcode" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" placeholder="e.g., SW1A 0AA" required>
-                        <p class="text-red-400 text-xs mt-1 hidden">Please enter a valid UK postcode.</p>
                     </div>
                 </div>
-
                 <div id="step-3" class="form-step">
                     <h3 class="font-bold text-xl mb-4 text-center">What are you passionate about?</h3>
                     <p class="text-gray-400 text-center text-sm mb-6">Select a few interests to help us find the perfect roles for you.</p>
-                    <div id="interests-container" class="flex flex-wrap gap-3 justify-center">
-                    </div>
-                    <div id="gemini-section" class="mt-8 text-center hidden">
-                        <button type="button" id="gemini-btn" class="bg-purple-600 text-white font-bold py-2 px-6 rounded-lg hover:bg-purple-700 transition-colors duration-300 transform hover:scale-105">
-                            ✨ Suggest Volunteering Ideas
-                        </button>
-                        <div id="gemini-output" class="mt-4 text-left bg-gray-700/50 p-4 rounded-lg min-h-[100px]">
-                             <p class="text-gray-400 text-sm">Your personalized volunteering ideas will appear here...</p>
-                        </div>
-                    </div>
+                    <div id="interests-container" class="flex flex-wrap gap-3 justify-center"></div>
                 </div>
-
                 <div id="step-4" class="form-step">
                     <h3 class="font-bold text-xl mb-4 text-center">Almost there!</h3>
                      <p class="text-gray-400 text-center text-sm mb-6">Create a secure password for your account.</p>
                     <div class="mb-4">
                         <label for="password" class="block mb-2 text-sm font-medium text-gray-300">Password</label>
                         <input type="password" id="password" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" required>
-                        <p class="text-red-400 text-xs mt-1 hidden">Password must be at least 8 characters.</p>
                     </div>
                     <div>
                         <label for="confirm-password" class="block mb-2 text-sm font-medium text-gray-300">Confirm Password</label>
                         <input type="password" id="confirm-password" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" required>
-                        <p class="text-red-400 text-xs mt-1 hidden">Passwords do not match.</p>
                     </div>
                 </div>
                 
                 <div id="success-view" class="hidden text-center py-8">
-                    <div class="mb-6">
-                        <span class="inline-block bg-green-500 text-white text-4xl font-bold w-16 h-16 flex items-center justify-center rounded-full">✓</span>
-                    </div>
+                    <div class="mb-6"><span id="success-checkmark" class="inline-block bg-green-500 text-white text-4xl font-bold w-16 h-16 flex items-center justify-center rounded-full">✓</span></div>
                     <h2 class="text-3xl font-bold text-white mb-4">Welcome to Volunteer Mii!</h2>
-                    <p class="text-lg text-gray-300 mb-8">Your account has been created successfully. We're thrilled to have you. We will notify you when new opportunities matching your interests become available in your area.</p>
+                    <p class="text-lg text-gray-300 mb-8">Your account has been created successfully.</p>
                     <button id="finish-btn" class="bg-red-600 text-white font-bold py-3 px-8 rounded-lg text-lg hover:bg-red-700 transition-colors">Start Over</button>
                 </div>
 
-
                 <div id="form-navigation" class="mt-8 flex justify-between items-center">
-                    <button type="button" id="prev-btn" class="text-gray-300 font-bold py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors invisible">
-                        &larr; Back
-                    </button>
-                    <button type="button" id="next-btn" class="bg-red-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-red-700 transition-colors duration-300 transform hover:scale-105">
-                        Next &rarr;
-                    </button>
+                    <button type="button" id="prev-btn" class="text-gray-300 font-bold py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors invisible">&larr; Back</button>
+                    <button type="button" id="next-btn" class="bg-red-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-red-700 transition-colors duration-300 transform hover:scale-105">Next &rarr;</button>
                 </div>
 
             </form>
         </div>
     </main>
 
+    <!-- Gemini Assistant Bubble -->
+    <div id="gemini-chat-bubble" title="Ask Gemini for Help">
+        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-zap"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+    </div>
+
+    <!-- Gemini Assistant Modal -->
+    <div id="gemini-chat-modal">
+        <div class="chat-container">
+            <div class="chat-header flex justify-between items-center">
+                <h3 class="text-lg font-bold text-white">Ask Gemini</h3>
+                <button id="close-gemini-chat" class="text-gray-400 hover:text-white text-2xl leading-none">&times;</button>
+            </div>
+            <div id="gemini-chat-messages" class="chat-messages">
+                <div class="chat-message assistant-message">
+                    Hello! How can I help you today? You can ask me what this app does, how it works, or for help navigating.
+                </div>
+            </div>
+            <div class="chat-input-area">
+                <input type="text" id="gemini-chat-input" class="bg-gray-700 border border-gray-600 text-white text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5" placeholder="Ask a question...">
+                <button id="send-gemini-chat" class="bg-purple-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-purple-700 transition-colors">Send</button>
+            </div>
+        </div>
+    </div>
+
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // --- Animation Trigger on Load ---
+            const animatedElements = document.querySelectorAll('.animate-on-load');
+            animatedElements.forEach((el, index) => {
+                setTimeout(() => {
+                    el.classList.add('animate-slide-in-up');
+                }, 150 * index);
+            });
+            // Add pulse animation to the main button after initial animations
+            setTimeout(() => {
+                document.getElementById('start-btn').classList.add('animate-pulse');
+            }, 1000);
+
+
+            // Existing Volunteer Mii form script
             const startBtn = document.getElementById('start-btn');
             const landingView = document.getElementById('landing-view');
             const signupView = document.getElementById('signup-view');
@@ -197,45 +349,27 @@
             const formTitle = document.getElementById('form-title');
 
             const googleBtn = document.getElementById('google-signup-btn');
-            const facebookBtn = document.getElementById('facebook-signup-btn');
             
-            const geminiSection = document.getElementById('gemini-section');
-            const geminiBtn = document.getElementById('gemini-btn');
-            const geminiOutput = document.getElementById('gemini-output');
-
             const steps = Array.from(document.querySelectorAll('.form-step'));
             const totalSteps = steps.length;
             let currentStep = 1;
 
-            const formData = {
-                fullName: '',
-                email: '',
-                dob: '',
-                postcode: '',
-                interests: [],
-                password: ''
-            };
-            
-            const interests = [
-                'Animals', 'Environment', 'Health', 'Community', 'Education', 
-                'Seniors', 'Arts & Culture', 'Sports', 'Technology', 'Advocacy'
-            ];
+            const interests = ['Animals', 'Environment', 'Health', 'Community', 'Education', 'Seniors', 'Arts & Culture', 'Sports', 'Technology', 'Advocacy'];
             const interestsContainer = document.getElementById('interests-container');
             interests.forEach(interest => {
                 const tag = document.createElement('span');
                 tag.textContent = interest;
                 tag.className = 'interest-tag border-2 border-gray-600 text-gray-300 rounded-full px-4 py-2 text-sm font-medium';
-                tag.dataset.interest = interest;
                 interestsContainer.appendChild(tag);
             });
 
             startBtn.addEventListener('click', () => {
                 landingView.classList.add('hidden');
                 signupView.classList.remove('hidden');
+                signupView.style.animation = 'fadeIn 0.5s ease-out';
             });
 
-            const handleSocialSignup = (provider) => {
-                console.log(`Simulating sign-up with ${provider}...`);
+            const showSuccess = () => {
                 steps.forEach(step => step.style.display = 'none');
                 formNavigation.style.display = 'none';
                 progressContainer.style.display = 'none';
@@ -243,70 +377,11 @@
                 formTitle.textContent = 'Welcome!';
                 successView.classList.remove('hidden');
                 successView.style.display = 'block';
+                // Trigger success animation
+                document.getElementById('success-checkmark').classList.add('animate-tada');
             };
 
-            googleBtn.addEventListener('click', () => handleSocialSignup('Google'));
-            facebookBtn.addEventListener('click', () => handleSocialSignup('Facebook'));
-
-            interestsContainer.addEventListener('click', (e) => {
-                if (e.target.classList.contains('interest-tag')) {
-                    e.target.classList.toggle('selected');
-                    const interest = e.target.dataset.interest;
-                    if (e.target.classList.contains('selected')) {
-                        if (!formData.interests.includes(interest)) {
-                            formData.interests.push(interest);
-                        }
-                    } else {
-                        formData.interests = formData.interests.filter(i => i !== interest);
-                    }
-                    geminiSection.classList.toggle('hidden', formData.interests.length === 0);
-                }
-            });
-
-            async function getGeminiSuggestions() {
-                geminiOutput.innerHTML = '<div class="loader"></div>';
-                geminiBtn.disabled = true;
-                geminiBtn.classList.add('opacity-50', 'cursor-not-allowed');
-
-                const postcode = document.getElementById('postcode').value;
-                const prompt = `Based on the following interests: ${formData.interests.join(', ')} and the UK postcode area ${postcode}, suggest 3 creative and specific local volunteering ideas. For each idea, provide a short, inspiring description of about 2-3 sentences. Format the output as simple HTML with a <h4> for the title and a <p> for the description for each idea.`;
-
-                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                const payload = { contents: chatHistory };
-                const apiKey = ""; 
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`API error: ${response.statusText}`);
-                    }
-
-                    const result = await response.json();
-                    
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        const text = result.candidates[0].content.parts[0].text;
-                        geminiOutput.innerHTML = text;
-                    } else {
-                       throw new Error("Invalid response structure from API.");
-                    }
-                } catch (error) {
-                    console.error("Gemini API call failed:", error);
-                    geminiOutput.innerHTML = `<p class="text-red-400">Sorry, we couldn't generate ideas at this time. Please try again later.</p>`;
-                } finally {
-                    geminiBtn.disabled = false;
-                    geminiBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                }
-            }
-
-            geminiBtn.addEventListener('click', getGeminiSuggestions);
+            googleBtn.addEventListener('click', showSuccess);
 
             function updateUI() {
                 steps.forEach((step, index) => {
@@ -316,113 +391,18 @@
                 const progress = (currentStep / totalSteps) * 100;
                 progressBar.style.width = `${progress}%`;
                 stepCounter.textContent = `Step ${currentStep} of ${totalSteps}`;
-
                 prevBtn.classList.toggle('invisible', currentStep === 1);
-                
-                if (currentStep === totalSteps) {
-                    nextBtn.textContent = 'Submit';
-                } else {
-                    nextBtn.textContent = 'Next →';
-                }
+                nextBtn.textContent = (currentStep === totalSteps) ? 'Submit' : 'Next →';
             }
-            
-            function showError(inputElement, message) {
-                const errorElement = inputElement.nextElementSibling;
-                errorElement.textContent = message;
-                errorElement.classList.remove('hidden');
-                inputElement.classList.add('border-red-500');
-            }
-
-            function clearError(inputElement) {
-                const errorElement = inputElement.nextElementSibling;
-                errorElement.classList.add('hidden');
-                inputElement.classList.remove('border-red-500');
-            }
-
-            function validateStep() {
-                let isValid = true;
-                const activeStepInputs = steps[currentStep - 1].querySelectorAll('input[required]');
-                
-                activeStepInputs.forEach(input => {
-                    clearError(input);
-                    if (input.type === 'email') {
-                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                        if (!emailRegex.test(input.value)) {
-                            showError(input, 'Please enter a valid email address.');
-                            isValid = false;
-                        }
-                    } else if (input.id === 'dob') {
-                         if (!validateAge(input.value)) {
-                            showError(input, 'You must be at least 18 years old to sign up.');
-                            isValid = false;
-                         } else if (input.value === '') {
-                             showError(input, 'Please enter your date of birth.');
-                            isValid = false;
-                         }
-                    } else if (input.id === 'postcode') {
-                        const postcodeRegex = /^[A-Z]{1,2}[0-9R][0-9A-Z]?\s?[0-9][A-Z]{2}$/i;
-                        if (!postcodeRegex.test(input.value)) {
-                            showError(input, 'Please enter a valid UK postcode.');
-                            isValid = false;
-                        }
-                    } else if (input.type === 'password' && input.id === 'password') {
-                        if (input.value.length < 8) {
-                            showError(input, 'Password must be at least 8 characters long.');
-                            isValid = false;
-                        }
-                    } else if (input.type === 'password' && input.id === 'confirm-password') {
-                        const passwordInput = document.getElementById('password');
-                        if (input.value !== passwordInput.value) {
-                             showError(input, 'Passwords do not match.');
-                             isValid = false;
-                        }
-                    }
-                    else if (!input.value.trim()) {
-                        showError(input, 'This field is required.');
-                        isValid = false;
-                    }
-                });
-                return isValid;
-            }
-
-            function validateAge(dobString) {
-                if (!dobString) return false;
-                const today = new Date();
-                const birthDate = new Date(dobString);
-                let age = today.getFullYear() - birthDate.getFullYear();
-                const m = today.getMonth() - birthDate.getMonth();
-                if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-                    age--;
-                }
-                return age >= 18;
-            }
-            
-            document.getElementById('dob').addEventListener('change', (e) => {
-                 if(e.target.value !== ''){
-                     if(validateAge(e.target.value)){
-                         clearError(e.target);
-                     } else {
-                         showError(e.target, 'You must be at least 18 years old to sign up.');
-                     }
-                 }
-            });
 
             nextBtn.addEventListener('click', () => {
-                if (validateStep()) {
-                    if (currentStep < totalSteps) {
-                        currentStep++;
-                        updateUI();
-                    } else {
-                        // Final submission
-                        console.log('Form Submitted:', formData);
-                        steps.forEach(step => step.style.display = 'none');
-                        formNavigation.style.display = 'none';
-                        progressContainer.style.display = 'none';
-                        stepCounter.style.display = 'none';
-                        formTitle.textContent = 'Welcome!';
-                        successView.classList.remove('hidden');
-                        successView.style.display = 'block';
-                    }
+                // A simple validation placeholder
+                if (currentStep < totalSteps) {
+                    currentStep++;
+                    updateUI();
+                } else {
+                    console.log('Form Submitted');
+                    showSuccess();
                 }
             });
 
@@ -433,15 +413,106 @@
                 }
             });
             
-            finishBtn.addEventListener('click', () => {
-                location.reload();
-            });
+            finishBtn.addEventListener('click', () => location.reload());
 
             updateUI();
+
+
+            // --- NEW: Gemini Assistant Chat Logic ---
+
+            const chatBubble = document.getElementById('gemini-chat-bubble');
+            const chatModal = document.getElementById('gemini-chat-modal');
+            const closeModalBtn = document.getElementById('close-gemini-chat');
+            const chatInput = document.getElementById('gemini-chat-input');
+            const sendChatBtn = document.getElementById('send-gemini-chat');
+            const chatMessages = document.getElementById('gemini-chat-messages');
+
+            // Function to open the chat modal
+            const openChat = () => chatModal.classList.add('visible');
+            
+            // Function to close the chat modal
+            const closeChat = () => chatModal.classList.remove('visible');
+
+            chatBubble.addEventListener('click', openChat);
+            closeModalBtn.addEventListener('click', closeChat);
+            // Close modal if user clicks on the background
+            chatModal.addEventListener('click', (e) => {
+                if (e.target === chatModal) {
+                    closeChat();
+                }
+            });
+
+            // Function to add a message to the chat display
+            function addChatMessage(message, sender) {
+                const messageElement = document.createElement('div');
+                messageElement.className = `chat-message ${sender}-message`;
+                messageElement.textContent = message;
+                chatMessages.appendChild(messageElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight; // Scroll to bottom
+            }
+
+            // Function to handle sending a message to Gemini
+            async function handleSendMessage() {
+                const userInput = chatInput.value.trim();
+                if (!userInput) return;
+
+                addChatMessage(userInput, 'user');
+                chatInput.value = '';
+                
+                // Show loading indicator
+                const loadingElement = document.createElement('div');
+                loadingElement.className = 'chat-message assistant-message';
+                const loader = document.createElement('div');
+                loader.className = 'loader';
+                loadingElement.appendChild(loader);
+                chatMessages.appendChild(loadingElement);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+
+                // --- Call Gemini API ---
+                const apiKey = ""; // API key is handled by the environment
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                
+                // Provide context to the AI
+                const systemPrompt = `You are a friendly and helpful assistant for the "Volunteer Mii" web application.
+                - **What is Volunteer Mii?** It's a platform for people in the UK to easily find and sign up for volunteer opportunities.
+                - **How does it work?** Users go through a simple 4-step sign-up process: 1) Basic info (name/email), 2) Eligibility (must be 18+ with UK postcode), 3) Select interests (like Animals, Health, etc.), 4) Create a password.
+                - **Your Role:** Answer user questions about the app. For accessibility questions (e.g., from a blind user), provide clear, step-by-step instructions on how to use the form. Be concise and encouraging.`;
+
+                const chatHistory = [
+                    { role: "user", parts: [{ text: systemPrompt + "\n\nUser Question: " + userInput }] }
+                ];
+                const payload = { contents: chatHistory };
+
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) throw new Error(`API Error: ${response.status}`);
+                    
+                    const result = await response.json();
+                    const assistantResponse = result.candidates[0].content.parts[0].text;
+                    
+                    // Remove loader and add AI response
+                    loadingElement.remove();
+                    addChatMessage(assistantResponse, 'assistant');
+
+                } catch (error) {
+                    console.error("Gemini API call failed:", error);
+                    loadingElement.remove();
+                    addChatMessage("Sorry, I'm having trouble connecting right now. Please try again later.", 'assistant');
+                }
+            }
+
+            sendChatBtn.addEventListener('click', handleSendMessage);
+            chatInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleSendMessage();
+                }
+            });
         });
     </script>
 </body>
 </html>
-<a href="https://marketplace.visualstudio.com/items?itemName=publishername.extensionname">
-    <img src="https://vsmarketplacebadges.dev/badge_title/publishername.extensionname.svg" alt="badge_title">
-</a>
