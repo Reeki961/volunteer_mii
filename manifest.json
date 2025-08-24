@@ -1,0 +1,15 @@
+{
+  "name": "Volunteer Mii",
+  "short_name": "VolunteerMii",
+  "start_url": "./mii01.html",
+  "display": "standalone",
+  "background_color": "#1F2937",
+  "theme_color": "#DC2626",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

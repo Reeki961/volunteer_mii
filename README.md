@@ -33,3 +33,14 @@ Tailwind CSS: For all styling and responsive design.
 JavaScript (Vanilla): For all client-side logic, including form navigation, validation, and API interaction. No external JS libraries are used.
 
 Google Gemini API: To generate dynamic and personalized content for users.
+
+📲 Progressive Web App
+This project now includes a web app manifest and service worker, allowing it to be installed on supported browsers as a Progressive Web App (PWA).
+
+🚀 Running Locally
+1. Serve the project root with any static file server. For example:
+   ```bash
+   python -m http.server
+   ```
+2. Open `http://localhost:8000/mii01.html` in your browser.
+3. Use the browser's "Install" or "Add to Home Screen" option to download the app for offline use.
