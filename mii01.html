@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#DC2626">
+    <link rel="manifest" href="manifest.json">
     <title>Volunteer Mii - Sign Up</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chosen Palette: Accessible Dark Mode - Dark Grey, Bright Red, Off-White -->
@@ -513,6 +515,13 @@
                 }
             });
         });
+    </script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('./sw.js');
+        });
+      }
     </script>
 </body>
 </html>
